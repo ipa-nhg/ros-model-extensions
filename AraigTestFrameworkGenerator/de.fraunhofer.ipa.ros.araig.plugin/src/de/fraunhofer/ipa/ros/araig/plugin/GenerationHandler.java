@@ -44,7 +44,8 @@ import com.google.inject.Provider;
 
 import componentInterface.ComponentInterface;
 import componentInterface.RosPublisher;
-import de.fraunhofer.ipa.ros.araig.plugin.generator.CalculatorPyCodeGenerator;
+import de.fraunhofer.ipa.ros.araig.plugin.generator.TestADeploymentGenerator;
+import de.fraunhofer.ipa.ros.araig.plugin.generator.TestBDeploymentGenerator;
 import de.fraunhofer.ipa.ros.araig.plugin.generator.CustomOutputProvider;
 import ros.Artifact;
 import ros.Node;
@@ -109,7 +110,7 @@ public class GenerationHandler extends AbstractHandler implements IHandler {
 				}
 			}
 			// Step 1: set name for the Calculator
-			InputDialog dialogInput = new InputDialog(shell,"Set name to the calculator", "Set name to the calculator", null, null);
+			InputDialog dialogInput = new InputDialog(shell,"Set name to the test", "Set name to the test", null, null);
 			dialogInput.open();
 			String CalculatorName = dialogInput.getValue();
 			
@@ -140,8 +141,34 @@ public class GenerationHandler extends AbstractHandler implements IHandler {
 						}
 			}}}
 			
+			//Step 3: select the type of test
+			ElementListSelectionDialog TestTypeSelections = new ElementListSelectionDialog(shell, new LabelProvider());
+			String[] TestTypes = {"TestTypeA", "TestTypeB"};
+			TestTypeSelections.setElements(TestTypes) ;
+			TestTypeSelections.setTitle("Select Test Type");
+			TestTypeSelections.setMessage("!!! This features requires that the option: Project -> Build Automatilly is enable !!!");
+			TestTypeSelections.setMultipleSelection(false);
+			TestTypeSelections.open();
+			
+	        final EclipseResourceFileSystemAccess2 fsa = fileAccessProvider.get();
+	        fsa.setProject(project);
+	        fsa.setOutputConfigurations(getOutputConfigurationsAsMap(new CustomOutputProvider()));
+            fsa.setMonitor(new NullProgressMonitor()); 
+            
+            //create a resource for the selected publisher....
+            resulted_r 
+			
+			if (TestTypeSelections.getResult()[0]=="TestTypeA") {
+				TestADeploymentGenerator generator = new TestADeploymentGenerator();
+				generator.doGenerate(resulted_r, fsa, null);
+			} else if (TestTypeSelections.getResult()[0]=="TestTypeB") {
+				TestBDeploymentGenerator generator = new TestBDeploymentGenerator();
+				generator.doGenerate(resulted_r, fsa, null);
+			}
+			
+
 			//Step 3: select publishers from the runner
-			ElementTreeSelectionDialog RunnerModelSelectionDialog = new ElementTreeSelectionDialog(shell, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
+			/**ElementTreeSelectionDialog RunnerModelSelectionDialog = new ElementTreeSelectionDialog(shell, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
 			RunnerModelSelectionDialog.setTitle("Select the .ros model that defines the ARAIG test runner");
 			RunnerModelSelectionDialog.setMessage("Select one element from the tree:");
 			RunnerModelSelectionDialog.addFilter(new FileExtensionFilter("ros"));
@@ -177,10 +204,10 @@ public class GenerationHandler extends AbstractHandler implements IHandler {
 						CalculatorSubscribers.add(sub);
 					}
 				}
-			}
+			}*/
 			
 			//Step 4: configure outputs
-			InputDialog dialogInputPublishers = new InputDialog(shell,"Add the list of outputs for the calculators", "Set the list with the names of the outputs separated by commas, i.e. 'FirstOut, SecondOut'", null, null);
+			/**InputDialog dialogInputPublishers = new InputDialog(shell,"Add the list of outputs for the calculators", "Set the list with the names of the outputs separated by commas, i.e. 'FirstOut, SecondOut'", null, null);
 			dialogInputPublishers.open();
 			List<String> InputPublishersList = Arrays.asList(dialogInputPublishers.getValue().split(",", -1));
 			List<Publisher> CalculatorPublishers = new ArrayList<Publisher>();
@@ -217,10 +244,10 @@ public class GenerationHandler extends AbstractHandler implements IHandler {
 			String calculator_name = CalculatorName+"_calculator";
 			String RelativePathTogenerationFolder = "src-gen/calculators/";
 			String RelativePathToCalculatorModel = RelativePathTogenerationFolder+calculator_name+".ros";
-			IFile CalculatorModelFile = project.getFile(RelativePathToCalculatorModel);
+			IFile CalculatorModelFile = project.getFile(RelativePathToCalculatorModel);*/
 			
 			// prepare the Xtext generation environment
-			CalculatorPyCodeGenerator generator = new CalculatorPyCodeGenerator();
+			/*TestADeploymentGenerator generator = new TestADeploymentGenerator();
 			final EclipseResourceFileSystemAccess2 fsa = fileAccessProvider.get();
 			fsa.setProject(project);
 			fsa.setOutputConfigurations(getOutputConfigurationsAsMap(new CustomOutputProvider()));
@@ -264,7 +291,7 @@ public class GenerationHandler extends AbstractHandler implements IHandler {
 			// Call the python code generator
 			ResourceSet rs2 = resourceSetProvider.get(project);
 			Resource r2 = rs2.getResource(model_result_uri, true);
-			generator.doGenerate(r2, fsa, generatorContext);
+			generator.doGenerate(r2, fsa, generatorContext);*/
 		}}
 		return null;
 	}
